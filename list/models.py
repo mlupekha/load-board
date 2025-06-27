@@ -21,13 +21,13 @@ class Load(models.Model):
     rate = models.DecimalField(max_digits=10, decimal_places=2)
     driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, null=True, related_name="loads")
     broker_name = models.CharField(max_length=100)
-    bol = models.FileField(upload_to='bol/', blank=True, null=True)
-    rc = models.FileField(upload_to='rc/', blank=True, null=True)
-    miles = models.DecimalField(max_digits=7, decimal_places=2)
+    bol = models.FileField(upload_to='bol/', blank=True, null=True) #BOL file
+    rc = models.FileField(upload_to='rc/', blank=True, null=True) #RC file
+    miles = models.DecimalField(max_digits=7, decimal_places=2) #total miles for the load
     disp = models.ForeignKey(Disp, on_delete=models.SET_NULL, null=True, related_name="loads")
     disp_percent = models.DecimalField("Dispatcher %", max_digits=5, decimal_places=2)
     pod = models.FileField(upload_to='pod/', blank=True, null=True)
-    booked_by = models.CharField(max_length=100)
+    booked_by = models.CharField(max_length=100) #disp name
     booked_on = models.DateField()
     drivers_rate = models.DecimalField(max_digits=10, decimal_places=2)
 
