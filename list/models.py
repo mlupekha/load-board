@@ -27,7 +27,6 @@ class Load(models.Model):
     disp = models.ForeignKey(Disp, on_delete=models.SET_NULL, null=True, related_name="loads")
     disp_percent = models.DecimalField("Dispatcher %", max_digits=5, decimal_places=2)
     pod = models.FileField(upload_to='pod/', blank=True, null=True)
-    booked_by = models.CharField(max_length=100) #disp name
     booked_on = models.DateField()
     drivers_rate = models.DecimalField(max_digits=10, decimal_places=2)
 
