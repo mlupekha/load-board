@@ -47,6 +47,14 @@ class Disp(models.Model):
     def __str__(self):
         return self.name
 
+class Broker(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    notes = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Load(models.Model):
     ref_number = models.CharField(max_length=50)
     rate = models.DecimalField(max_digits=10, decimal_places=2)
