@@ -1,3 +1,6 @@
+from decimal import Decimal, ROUND_HALF_UP
+
+from django.core.exceptions import ValidationError
 from django.db import models
 
 
@@ -15,7 +18,6 @@ class Driver(models.Model):
         choices=PAY_TYPE_CHOICES,
         default=PAY_TYPE_PERCENT,
     )
-
     # for percent_of_gross
     driver_percent = models.DecimalField(
         max_digits=5,
@@ -24,7 +26,6 @@ class Driver(models.Model):
         null=True,
         help_text="Percent of gross (30.00 means 30%)",
     )
-
     # for per_mile
     driver_per_mile = models.DecimalField(
         max_digits=5,
@@ -33,7 +34,6 @@ class Driver(models.Model):
         null=True,
         help_text="Amount per mile (0.50 means $0.5 per mile)",
     )
-
     truck_number = models.CharField(max_length=50)
     dims = models.CharField(max_length=100, blank=True, null=True)  # dimensions of the truck
     payload = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)  # max payload of the truck
@@ -59,15 +59,84 @@ class Load(models.Model):
     ref_number = models.CharField(max_length=50)
     rate = models.DecimalField(max_digits=10, decimal_places=2)
     driver = models.ForeignKey(Driver, on_delete=models.SET_NULL, null=True, related_name="loads")
-    broker_name = models.CharField(max_length=100)
+    broker = models.ForeignKey(Broker, on_delete=models.SET_NULL, null=True, related_name="loads")
     bol = models.FileField(upload_to='bol/', blank=True, null=True) #BOL file
     rc = models.FileField(upload_to='rc/', blank=True, null=True) #RC file
     miles = models.DecimalField(max_digits=7, decimal_places=2) #total miles for the load
     disp = models.ForeignKey(Disp, on_delete=models.SET_NULL, null=True, related_name="loads")
-    disp_percent = models.DecimalField("Dispatcher %", max_digits=5, decimal_places=2)
+    #disp % variants with 3% as default
+    disp_percent = models.DecimalField(
+        "Dispatcher %",
+        max_digits=5,
+        decimal_places=2,
+        choices=[
+            (Decimal("1.00"), "1%"),
+            (Decimal("2.00"), "2%"),
+            (Decimal("3.00"), "3%"),
+            (Decimal("5.00"), "5%"),
+        ], default=Decimal("3.00"),
+    )
     pod = models.FileField(upload_to='pod/', blank=True, null=True)
     booked_on = models.DateField()
-    drivers_rate = models.DecimalField(max_digits=10, decimal_places=2)
+    drivers_payout_final = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    dispatcher_payout_final = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    company_profit_final = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+
+
 
     def __str__(self):
-        return f"{self.ref_number} - {self.broker_name}"
+        broker_name = self.broker.name if self.broker else "No Broker"
+        return f"{self.ref_number} - {broker_name}"
+
+    #at first I didn't want to quantize the values, but GEN AI said it's better to do it
+    @staticmethod
+    def _quantize(amount: Decimal) -> Decimal:
+        return amount.quantize(Decimal("0.01"), rounding="ROUND_HALF_UP")
+
+    #function to calculate the payouts for different pay types
+    @property
+    def driver_payout(self) -> Decimal:
+        if not self.driver:
+            return Decimal("0.00")
+        if self.driver.pay_type == Driver.PAY_TYPE_PERCENT:
+            percent = Decimal(self.driver.driver_percent or 0) / Decimal("100")
+            payout = Decimal(self.rate or 0) * percent
+            return self._quantize(payout)
+        per_mile = Decimal(self.driver.driver_per_mile or 0)
+        miles = Decimal(self.miles or 0)
+        payout = per_mile * miles
+        minimum = Decimal("200.00")
+        payout = max(payout, minimum)
+        return self._quantize(payout)
+
+    #function to calculate the payouts for dispatcher
+    @property
+    def dispatcher_payout(self) -> Decimal:
+        percent = Decimal(self.disp_percent or 0) / Decimal("100")
+        payout = Decimal(self.rate or 0) * percent
+        return self._quantize(payout)
+
+    @property
+    def company_profit(self) -> Decimal:
+        miles_cost = Decimal(self.miles or 0) * Decimal("1.45")
+        profit = Decimal(self.rate or 0) - miles_cost
+        return self._quantize(profit)
+
+    #small validation function
+    def clean(self):
+        if self.rate is not None and self.rate < 0: #check if rate is negative
+            raise ValidationError("Rate cannot be negative")
+        if self.miles is not None and self.miles < 0: #check if miles is negative
+            raise ValidationError("Miles cannot be negative")
+        if self.driver: # check if driver is assigned and his pay_type
+            if self.driver.pay_type == Driver.PAY_TYPE_PERCENT and not self.driver.driver_percent:
+                raise ValidationError({"driver": "Driver percent must be set for percent pay type"})
+            if self.driver.pay_type == Driver.PAY_TYPE_MILES and not self.driver.driver_per_mile:
+                raise ValidationError({"driver": "Driver per mile must be set for per mile pay type"})
+
+
+    def save(self, *args, **kwargs):
+        self.drivers_payout_final = self.driver_payout
+        self.drivers_payout_final = self.dispatcher_payout
+        self.company_profit_final = self.company_profit
+        super().save(*args, **kwargs)
