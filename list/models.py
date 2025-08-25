@@ -137,6 +137,6 @@ class Load(models.Model):
 
     def save(self, *args, **kwargs):
         self.drivers_payout_final = self.driver_payout
-        self.drivers_payout_final = self.dispatcher_payout
+        self.dispatcher_payout_final = self.dispatcher_payout
         self.company_profit_final = self.company_profit
         super().save(*args, **kwargs)
