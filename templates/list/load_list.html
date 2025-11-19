@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Load Board</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .money { text-align: right; }
+        .header-link { text-decoration: none; color: #333; font-weight: bold; margin-right: 15px;}
+        .profit-positive { color: green; }
+        .profit-negative { color: red; }
+    </style>
+</head>
+<body>
+
+    <div style="margin-bottom: 20px;">
+        <h1>Load Board List</h1>
+        <a href="/admin/" class="header-link" target="_blank">Go to Admin Panel</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Ref #</th>
+                <th>Date</th>
+                <th>Broker</th>
+                <th>Driver</th>
+                <th>Files</th>
+                <th>From/To (Miles)</th>
+                <th class="money">Rate (Gross)</th>
+                <th class="money">Driver Pay</th>
+                <th class="money">Disp Pay</th>
+                <th class="money">Profit</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for load in loads %}
+            <tr>
+                <td>{{ load.id }}</td>
+                <td>{{ load.ref_number }}</td>
+                <td>{{ load.booked_on|date:"M d, Y" }}</td>
+                <td>{{ load.broker.name|default:"-" }}</td>
+                <td>
+                    {% if load.driver %}
+                        {{ load.driver.name }}
+                        <br>
+                        <small style="color: gray;">
+                            {% if load.driver.pay_type == 'percent_of_gross' %}
+                                {{ load.driver.driver_percent }}%
+                            {% else %}
+                                ${{ load.driver.driver_per_mile }}/mi
+                            {% endif %}
+                        </small>
+                    {% else %}
+                        <span style="color: red;">Not assigned</span>
+                    {% endif %}
+                </td>
+
+                <td>
+                    {% if load.rc %}
+                        <a href="{{ load.rc.url }}" target="_blank">RC</a><br>
+                    {% endif %}
+                    {% if load.bol %}
+                        <a href="{{ load.bol.url }}" target="_blank">BOL</a><br>
+                    {% endif %}
+                    {% if load.pod %}
+                        <a href="{{ load.pod.url }}" target="_blank">POD</a>
+                    {% endif %}
+                    {% if not load.rc and not load.bol and not load.pod %}
+                        <span style="color: #ccc;">-</span>
+                    {% endif %}
+                </td>
+
+                <td>{{ load.miles }} mi</td>
+                
+                <td class="money"><strong>${{ load.rate }}</strong></td>
+
+                <!-- Используем _final поля, если они есть, иначе считаем свойством -->
+                <td class="money">
+                    ${{ load.driver_payout_final|default:load.driver_payout }}
+                </td>
+                
+                <td class="money">
+                    ${{ load.dispatcher_payout_final|default:load.dispatcher_payout }}
+                    <br>
+
+                    <small style="color: gray;">
+                        {{ load.disp.name|default:"No Disp" }} ({{ load.disp_percent }}%)
+                    </small>
+                    <small style="color: gray;">{{ load.disp_percent }}%</small>
+                </td>
+
+                <td class="money">
+                    {% with profit=load.company_profit_final|default:load.company_profit %}
+                        <span class="{% if profit >= 0 %}profit-positive{% else %}profit-negative{% endif %}">
+                            ${{ profit }}
+                        </span>
+                    {% endwith %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="9" style="text-align: center; padding: 20px;">
+                    No loads found yet. <a href="/admin/list/load/add/">Add first load</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</body>
+</html>
