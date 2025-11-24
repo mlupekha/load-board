@@ -1,6 +1,8 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from .models import Load
+from django.urls import reverse_lazy
+from django.views.generic.edit import UpdateView
 
 
 class LoadListView(ListView):
@@ -11,7 +13,7 @@ class LoadListView(ListView):
     ordering = ['-booked on']
 
 
-class LoadUpdateView(DetailView):
+class LoadUpdateView(UpdateView):
     model = Load
     template_name = "list/load_form"
     fields = ["rc", "bol", "pod"]
