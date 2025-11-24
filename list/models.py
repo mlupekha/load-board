@@ -1,4 +1,4 @@
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal
 
 from django.core.exceptions import ValidationError
 from django.db import models
@@ -88,7 +88,7 @@ class Load(models.Model):
         broker_name = self.broker.name if self.broker else "No Broker"
         return f"{self.ref_number} - {broker_name}"
 
-    #at first I didn't want to quantize the values, but GEN AI said it's better to do it
+    #at first, I didn't want to quantize the values, but GEN AI said it's better to do it
     @staticmethod
     def _quantize(amount: Decimal) -> Decimal:
         return amount.quantize(Decimal("0.01"), rounding="ROUND_HALF_UP")
@@ -124,11 +124,11 @@ class Load(models.Model):
 
     #small validation function
     def clean(self):
-        if self.rate is not None and self.rate < 0: #check if rate is negative
+        if self.rate is not None and self.rate < 0: #check if the rate is negative
             raise ValidationError("Rate cannot be negative")
-        if self.miles is not None and self.miles < 0: #check if miles is negative
+        if self.miles is not None and self.miles < 0: #check if miles are negative
             raise ValidationError("Miles cannot be negative")
-        if self.driver: # check if driver is assigned and his pay_type
+        if self.driver: # check if the driver is assigned and his pay_type
             if self.driver.pay_type == Driver.PAY_TYPE_PERCENT and not self.driver.driver_percent:
                 raise ValidationError({"driver": "Driver percent must be set for percent pay type"})
             if self.driver.pay_type == Driver.PAY_TYPE_MILES and not self.driver.driver_per_mile:
@@ -136,7 +136,14 @@ class Load(models.Model):
 
 
     def save(self, *args, **kwargs):
-        self.drivers_payout_final = self.driver_payout
-        self.dispatcher_payout_final = self.dispatcher_payout
-        self.company_profit_final = self.company_profit
+        # if the field is empty, set it to the calculated value, you can also set it manually if needed
+        if self.drivers_payout_final is None:
+            self.driver_payout_final = self.driver_payout
+            
+        if self.dispatcher_payout_final is None:
+            self.dispatcher_payout_final = self.dispatcher_payout
+            
+        if self.company_profit_final is None:
+            self.company_profit_final = self.company_profit
+            
         super().save(*args, **kwargs)

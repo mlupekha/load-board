@@ -8,6 +8,11 @@ class LoadListView(ListView):
     template_name = "list/load_list.html"
     context_object_name = "loads"
     paginate_by = 10
+    ordering = ['-booked on']
 
 
-# Create your views here.
+class LoadUpdateView(DetailView):
+    model = Load
+    template_name = "list/load_form"
+    fields = ["rc", "bol", "pod"]
+    success_url = reverse_lazy('load_list')
