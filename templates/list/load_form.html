@@ -1,10 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <title>Upload Files</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
+        form { border: 1px solid #ddd; padding: 20px; border-radius: 5px; }
+        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; cursor: pointer; }
+        button:hover { background-color: #45a049; }
+        .back-link { display: inline-block; margin-top: 10px; color: #666; text-decoration: none; }
+    </style>
 </head>
 <body>
-$END$
+
+    <h1>
+        {% if load %}
+            Upload Files / Edit Load #{{ load.ref_number }}
+        {% else %}
+            Create New Load
+        {% endif %}
+    </h1>
+
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <button type="submit">Save Files</button>
+    </form>
+
+    <a href="{% url 'load_list' %}" class="back-link">← Back to list</a>
+
 </body>
 </html>
