@@ -10,11 +10,22 @@ class LoadListView(ListView):
     template_name = "list/load_list.html"
     context_object_name = "loads"
     paginate_by = 10
-    ordering = ['-booked on']
+    ordering = ['-booked_on']
 
 
 class LoadUpdateView(UpdateView):
     model = Load
-    template_name = "list/load_form"
+    template_name = "list/load_form.html"
     fields = ["rc", "bol", "pod"]
+    success_url = reverse_lazy('load_list')
+
+class LoadCreateView(CreateView):
+    model = Load
+    template_name = "list/load_form.html"
+    fields = [
+        'ref_number', 'booked_on',
+        'broker', 'driver', 'disp',
+        'rate', 'miles', 'disp_percent',
+        'rc', 'bol'
+    ]
     success_url = reverse_lazy('load_list')
