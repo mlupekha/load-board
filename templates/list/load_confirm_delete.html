@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Load</title>
+    <style>
+        body { font-family: sans-serif; padding: 40px; max-width: 600px; margin: 0 auto; text-align: center; }
+        .btn { padding: 10px 20px; text-decoration: none; border-radius: 5px; font-weight: bold; border: none; cursor: pointer; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        .btn-secondary { background-color: #6c757d; color: white; margin-left: 10px; }
+        .warning-box { background-color: #fff3cd; border: 1px solid #ffeeba; padding: 20px; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+    <h1>Delete Load?</h1>
+
+    <div class="warning-box">
+        <p>Are you sure you want to delete load <strong>#{{ object.ref_number }}</strong>?</p>
+        <p>This action cannot be undone.</p>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Yes, Delete</button>
+        <a href="{% url 'load_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+
+</body>
+</html>

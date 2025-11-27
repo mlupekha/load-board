@@ -28,6 +28,62 @@
 
         <a href="/admin/" class="header-link" target="_blank">Go to Admin Panel</a>
     </div>
+    
+    <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ddd;">
+        <form method="get" style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+
+            <div>
+                <label style="font-size: 0.8em; display: block;">Ref #</label>
+                <input type="text" name="ref" value="{{ current_ref }}" placeholder="Search Ref..." style="padding: 5px;">
+            </div>
+
+            <div>
+                <label style="font-size: 0.8em; display: block;">Date</label>
+                <input type="date" name="date" value="{{ current_date }}" style="padding: 5px;">
+            </div>
+
+            <div>
+                <label style="font-size: 0.8em; display: block;">Driver</label>
+                <select name="driver" style="padding: 5px; min-width: 120px;">
+                    <option value="">All Drivers</option>
+                    {% for d in drivers %}
+                        <option value="{{ d.id }}" {% if d.id == current_driver %}selected{% endif %}>
+                            {{ d.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label style="font-size: 0.8em; display: block;">Broker</label>
+                <select name="broker" style="padding: 5px; min-width: 120px;">
+                    <option value="">All Brokers</option>
+                    {% for b in brokers %}
+                        <option value="{{ b.id }}" {% if b.id == current_broker %}selected{% endif %}>
+                            {{ b.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <label style="font-size: 0.8em; display: block;">Disp</label>
+                <select name="disp" style="padding: 5px; min-width: 100px;">
+                    <option value="">All Disps</option>
+                    {% for ds in disps %}
+                        <option value="{{ ds.id }}" {% if ds.id == current_disp %}selected{% endif %}>
+                            {{ ds.name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div>
+                <button type="submit" style="padding: 6px 15px; background-color: #333; color: white; border: none; cursor: pointer;">Search</button>
+                <a href="{% url 'load_list' %}" style="margin-left: 10px; font-size: 0.9em; color: #666;">Reset</a>
+            </div>
+        </form>
+    </div>
 
     <table>
         <thead>
