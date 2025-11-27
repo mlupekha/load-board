@@ -138,7 +138,7 @@ class Load(models.Model):
     def save(self, *args, **kwargs):
         # if the field is empty, set it to the calculated value, you can also set it manually if needed
         if self.drivers_payout_final is None:
-            self.driver_payout_final = self.driver_payout
+            self.drivers_payout_final = self.driver_payout
             
         if self.dispatcher_payout_final is None:
             self.dispatcher_payout_final = self.dispatcher_payout

@@ -1,16 +1,61 @@
 from django.shortcuts import render
 from django.views.generic import ListView, DetailView
-from .models import Load
+from .models import Load, Driver, Broker, Disp
 from django.urls import reverse_lazy
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import UpdateView, CreateView
 
 
 class LoadListView(ListView):
     model = Load
     template_name = "list/load_list.html"
     context_object_name = "loads"
-    paginate_by = 10
-    ordering = ['-booked_on']
+    paginate_by = 20
+    ordering = ['id']
+
+    def get_queryset(self):
+        #basic search (AI suggested to optimize it)
+        queryset = super().get_queryset().select_related('driver', 'broker', 'disp')
+
+        #getting parameters from url (GET request)
+        ref_query = self.request.GET.get('ref')
+        date_query = self.request.GET.get('date')
+        driver_id = self.request.GET.get('driver')
+        broker_id = self.request.GET.get('broker')
+        disp_id = self.request.GET.get('disp')
+
+        #applying filters
+        if ref_query:
+            queryset = queryset.filter(ref_number__icontains=ref_query)
+
+        if date_query:
+            queryset = queryset.filter(booked_on=date_query)
+
+        if driver_id:
+            queryset = queryset.filter(driver_id=driver_id)
+
+        if broker_id:
+            queryset = queryset.filter(broker_id=broker_id)
+
+        if disp_id:
+            queryset = queryset.filter(disp_id=disp_id)
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        #lists for dropdowns
+        context['drivers'] = Driver.objects.all().order_by('name')
+        context['brokers'] = Broker.objects.all().order_by('name')
+        context['disps'] = Disp.objects.all().order_by('name')
+
+        #getting back chosen parameters from url
+        context['current_ref'] = self.request.GET.get('ref', '')
+        context['current_date'] = self.request.GET.get('date', '')
+        context['current_driver'] = int(self.request.GET.get('driver') or 0)
+        context['current_broker'] = int(self.request.GET.get('broker') or 0)
+        context['current_disp'] = int(self.request.GET.get('disp') or 0)
+
+        return context
 
 
 class LoadUpdateView(UpdateView):
