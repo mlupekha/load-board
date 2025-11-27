@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.views.generic import ListView, DetailView
 from .models import Load, Driver, Broker, Disp
 from django.urls import reverse_lazy
-from django.views.generic.edit import UpdateView, CreateView
+from django.views.generic.edit import UpdateView, CreateView, DeleteView
 
 
 class LoadListView(ListView):
@@ -73,4 +73,22 @@ class LoadCreateView(CreateView):
         'rate', 'miles', 'disp_percent',
         'rc', 'bol'
     ]
+    success_url = reverse_lazy('load_list')
+
+
+class LoadEditView(UpdateView):
+    model = Load
+    template_name = "list/load_form.html"
+    fields = [
+        'ref_number', 'booked_on',
+        'broker', 'driver', 'disp',
+        'rate', 'miles', 'disp_percent',
+        'rc', 'bol', 'pod'
+    ]
+    success_url = reverse_lazy('load_list')
+
+
+class LoadDeleteView(DeleteView):
+    model = Load
+    template_name = "list/load_confirm_delete.html"
     success_url = reverse_lazy('load_list')
