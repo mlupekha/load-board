@@ -83,7 +83,8 @@ class LoadEditView(UpdateView):
         'ref_number', 'booked_on',
         'broker', 'driver', 'disp',
         'rate', 'miles', 'disp_percent',
-        'rc', 'bol', 'pod'
+        'rc', 'bol', 'pod', 'drivers_payout_final',
+        'dispatcher_payout_final'
     ]
     success_url = reverse_lazy('load_list')
 
