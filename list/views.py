@@ -76,6 +76,24 @@ class LoadCreateView(CreateView):
     success_url = reverse_lazy('load_list')
 
 
+class DispCreateView(CreateView):
+    model = Disp
+    template_name = "list/load_form.html"
+    fields = ['name']
+    success_url = reverse_lazy('load_list')
+    extra_context = {'title': 'Add New Disp'}
+
+
+class DriverCreateView(CreateView):
+    model = Driver
+    template_name = "list/load_form.html"
+    fields = ['name', 'pay_type', 'driver_percent', 'driver_per_mile',
+              'truck_number', 'dims', 'payload'
+              ]
+    success_url = reverse_lazy('load_list')
+    extra_context = {'title': 'Add New Driver'}
+
+
 class LoadEditView(UpdateView):
     model = Load
     template_name = "list/load_form.html"
@@ -87,6 +105,13 @@ class LoadEditView(UpdateView):
         'dispatcher_payout_final'
     ]
     success_url = reverse_lazy('load_list')
+
+
+class BrokerCreateView(CreateView):
+    model = Broker
+    template_name = "list/load_form.html"
+    fields = ['name', 'notes']
+    extra_context = {'title': 'Add New Broker'}
 
 
 class LoadDeleteView(DeleteView):
