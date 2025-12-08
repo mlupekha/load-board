@@ -14,8 +14,10 @@
 <body>
 
     <h1>
-        {% if load %}
-            Upload Files / Edit Load #{{ load.ref_number }}
+        {% if header_title %}
+            {{ header_title }}
+        {% elif load %}
+            Edit Load #{{ load.ref_number }}
         {% else %}
             Create New Load
         {% endif %}
