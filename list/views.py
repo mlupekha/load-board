@@ -112,6 +112,7 @@ class BrokerCreateView(CreateView):
     template_name = "list/load_form.html"
     fields = ['name', 'notes']
     extra_context = {'title': 'Add New Broker'}
+    success_url = reverse_lazy('load_list')
 
 
 class LoadDeleteView(DeleteView):
