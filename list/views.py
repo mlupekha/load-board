@@ -101,10 +101,26 @@ class LoadEditView(UpdateView):
         'ref_number', 'booked_on',
         'broker', 'driver', 'disp',
         'rate', 'miles', 'disp_percent',
-        'rc', 'bol', 'pod', 'drivers_payout_final',
-        'dispatcher_payout_final'
+        'rc', 'bol', 'pod',
+        'drivers_payout_final',
+        'dispatcher_payout_final',
+        'company_profit_final',
     ]
     success_url = reverse_lazy('load_list')
+
+    def form_valid(self, form):
+        obj = form.instance
+
+        if 'drivers_payout_final' not in form.changed_data:
+            obj.drivers_payout_final = None
+
+        if 'dispatcher_payout_final' not in form.changed_data:
+            obj.dispatcher_payout_final = None
+
+        if 'company_profit_final' not in form.changed_data:
+            obj.company_profit_final = None
+
+        return super().form_valid(form)
 
 
 class BrokerCreateView(CreateView):
