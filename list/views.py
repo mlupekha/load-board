@@ -3,9 +3,10 @@ from django.views.generic import ListView, DetailView
 from .models import Load, Driver, Broker, Disp
 from django.urls import reverse_lazy
 from django.views.generic.edit import UpdateView, CreateView, DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 
-class LoadListView(ListView):
+class LoadListView(LoginRequiredMixin, ListView):
     model = Load
     template_name = "list/load_list.html"
     context_object_name = "loads"
@@ -58,13 +59,13 @@ class LoadListView(ListView):
         return context
 
 
-class LoadUpdateView(UpdateView):
+class LoadUpdateView(LoginRequiredMixin, UpdateView):
     model = Load
     template_name = "list/load_form.html"
     fields = ["rc", "bol", "pod"]
     success_url = reverse_lazy('load_list')
 
-class LoadCreateView(CreateView):
+class LoadCreateView(LoginRequiredMixin, CreateView):
     model = Load
     template_name = "list/load_form.html"
     fields = [
@@ -76,7 +77,7 @@ class LoadCreateView(CreateView):
     success_url = reverse_lazy('load_list')
 
 
-class DispCreateView(CreateView):
+class DispCreateView(LoginRequiredMixin, CreateView):
     model = Disp
     template_name = "list/load_form.html"
     fields = ['name']
@@ -84,7 +85,7 @@ class DispCreateView(CreateView):
     extra_context = {'title': 'Add New Disp'}
 
 
-class DriverCreateView(CreateView):
+class DriverCreateView(LoginRequiredMixin, CreateView):
     model = Driver
     template_name = "list/load_form.html"
     fields = ['name', 'pay_type', 'driver_percent', 'driver_per_mile',
@@ -94,7 +95,7 @@ class DriverCreateView(CreateView):
     extra_context = {'title': 'Add New Driver'}
 
 
-class LoadEditView(UpdateView):
+class LoadEditView(LoginRequiredMixin, UpdateView):
     model = Load
     template_name = "list/load_form.html"
     fields = [
@@ -123,7 +124,7 @@ class LoadEditView(UpdateView):
         return super().form_valid(form)
 
 
-class BrokerCreateView(CreateView):
+class BrokerCreateView(LoginRequiredMixin, CreateView):
     model = Broker
     template_name = "list/load_form.html"
     fields = ['name', 'notes']
@@ -131,7 +132,7 @@ class BrokerCreateView(CreateView):
     success_url = reverse_lazy('load_list')
 
 
-class LoadDeleteView(DeleteView):
+class LoadDeleteView(LoginRequiredMixin, DeleteView):
     model = Load
     template_name = "list/load_confirm_delete.html"
     success_url = reverse_lazy('load_list')
