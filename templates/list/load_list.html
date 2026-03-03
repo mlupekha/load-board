@@ -28,12 +28,12 @@
 
         <a href="{% url 'driver_add' %}" style="text-decoration: none; color: #555; font-size: 0.9em;">[+ Driver]</a>
         <a href="{% url 'broker_add' %}" style="text-decoration: none; color: #555; font-size: 0.9em; margin-left: 10px;">[+ Broker]</a>
-        <a href="{% url 'disp_add' %}" style="text-decoration: none; color: #555; font-size: 0.9em; margin-left: 10px;">[+ Disp]</a>
+            <a href="{% url 'disp_add' %}" style="text-decoration: none; color: #555; font-size: 0.9em; margin-left: 10px;">[+ Disp]</a>
 
-        <span style="margin: 0 10px; color: #ccc;">|</span>
+            <span style="margin: 0 10px; color: #ccc;">|</span>
 
-        <a href="/admin/" class="header-link" target="_blank">Go to Admin Panel</a>
-    </div>
+            <a href="{% url 'logout' %}" class="header-link">Logout</a>
+        </div>
     
     <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ddd;">
         <form method="get" style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
