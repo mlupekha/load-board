@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import (
+from list.views import (
     LoadListView, LoadUpdateView, LoadCreateView, LoadEditView, LoadDeleteView,
     DriverCreateView, BrokerCreateView, DispCreateView
 )
