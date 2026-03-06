@@ -85,7 +85,7 @@ class Load(models.Model):
         broker_name = self.broker.name if self.broker else "No Broker"
         return f"{self.ref_number} - {broker_name}"
 
-    #at first, I didn't want to quantize the values, but GEN AI said it's better to do it
+
     @staticmethod
     def _quantize(amount: Decimal) -> Decimal:
         return amount.quantize(Decimal("0.01"), rounding="ROUND_HALF_UP")
