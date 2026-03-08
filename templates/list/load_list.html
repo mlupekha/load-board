@@ -1,208 +1,187 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Load Board</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f2f2f2; }
-        .money { text-align: right; }
-        .header-link { text-decoration: none; color: #333; font-weight: bold; margin-right: 15px;}
-        .profit-positive { color: green; }
-        .profit-negative { color: red; }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
 
-    <div style="margin-bottom: 20px;">
-        <h1>Load Board List</h1>
+{% block title %}Load Board{% endblock %}
 
-        <a href="{% url 'load_add' %}"
-           style="background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">
-           + Add New Load
-        </a>
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <h1>Load Board List</h1>
 
-        <span style="margin: 0 10px;">|</span>
+    <a href="{% url 'load_add' %}"
+       style="background-color: #008CBA; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px; font-weight: bold;">
+       + Add New Load
+    </a>
 
-        <a href="{% url 'driver_add' %}" style="text-decoration: none; color: #555; font-size: 0.9em;">[+ Driver]</a>
-        <a href="{% url 'broker_add' %}" style="text-decoration: none; color: #555; font-size: 0.9em; margin-left: 10px;">[+ Broker]</a>
-            <a href="{% url 'disp_add' %}" style="text-decoration: none; color: #555; font-size: 0.9em; margin-left: 10px;">[+ Disp]</a>
+    <span style="margin: 0 10px;">|</span>
 
-            <span style="margin: 0 10px; color: #ccc;">|</span>
-                    <form method="post" action="{% url 'logout' %}" style="display: inline;">
-                {% csrf_token %}
-                <button type="submit" class="header-link"
-                        style="background: none; border: none; padding: 0; cursor: pointer;">
-                    Logout
-                </button>
-            </form>
+    <a href="{% url 'driver_add' %}" style="text-decoration: none; color: #555; font-size: 0.9em;">[+ Driver]</a>
+    <a href="{% url 'broker_add' %}" style="text-decoration: none; color: #555; font-size: 0.9em; margin-left: 10px;">[+ Broker]</a>
+    <a href="{% url 'disp_add' %}" style="text-decoration: none; color: #555; font-size: 0.9em; margin-left: 10px;">[+ Disp]</a>
+
+    <span style="margin: 0 10px; color: #ccc;">|</span>
+
+    <form method="post" action="{% url 'logout' %}" style="display: inline;">
+        {% csrf_token %}
+        <button type="submit" class="header-link"
+                style="background: none; border: none; padding: 0; cursor: pointer;">
+            Logout
+        </button>
+    </form>
+</div>
+
+<div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ddd;">
+    <form method="get" style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+        <div>
+            <label style="font-size: 0.8em; display: block;">Ref #</label>
+            <input type="text" name="ref" value="{{ current_ref }}" placeholder="Search Ref..." style="padding: 5px;">
         </div>
-    
-    <div style="background-color: #f1f1f1; padding: 15px; border-radius: 5px; margin-bottom: 20px; border: 1px solid #ddd;">
-        <form method="get" style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
 
-            <div>
-                <label style="font-size: 0.8em; display: block;">Ref #</label>
-                <input type="text" name="ref" value="{{ current_ref }}" placeholder="Search Ref..." style="padding: 5px;">
-            </div>
+        <div>
+            <label style="font-size: 0.8em; display: block;">Date</label>
+            <input type="date" name="date" value="{{ current_date }}" style="padding: 5px;">
+        </div>
 
-            <div>
-                <label style="font-size: 0.8em; display: block;">Date</label>
-                <input type="date" name="date" value="{{ current_date }}" style="padding: 5px;">
-            </div>
-
-            <div>
-                <label style="font-size: 0.8em; display: block;">Driver</label>
-                <select name="driver" style="padding: 5px; min-width: 120px;">
-                    <option value="">All Drivers</option>
-                    {% for d in drivers %}
-                        <option value="{{ d.id }}" {% if d.id == current_driver %}selected{% endif %}>
-                            {{ d.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div>
-                <label style="font-size: 0.8em; display: block;">Broker</label>
-                <select name="broker" style="padding: 5px; min-width: 120px;">
-                    <option value="">All Brokers</option>
-                    {% for b in brokers %}
-                        <option value="{{ b.id }}" {% if b.id == current_broker %}selected{% endif %}>
-                            {{ b.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div>
-                <label style="font-size: 0.8em; display: block;">Disp</label>
-                <select name="disp" style="padding: 5px; min-width: 100px;">
-                    <option value="">All Disps</option>
-                    {% for ds in disps %}
-                        <option value="{{ ds.id }}" {% if ds.id == current_disp %}selected{% endif %}>
-                            {{ ds.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div>
-                <button type="submit" style="padding: 6px 15px; background-color: #333; color: white; border: none; cursor: pointer;">Search</button>
-                <a href="{% url 'load_list' %}" style="margin-left: 10px; font-size: 0.9em; color: #666;">Reset</a>
-            </div>
-        </form>
-    </div>
-
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Ref #</th>
-                <th>Date</th>
-                <th>Broker</th>
-                <th>Driver</th>
-                <th>Files</th>
-                <th>From/To (Miles)</th>
-                <th class="money">Rate (Gross)</th>
-                <th class="money">Driver Pay</th>
-                <th class="money">Disp Pay</th>
-                <th class="money">Profit</th>
-                    <th>Actions</th> <!-- Новая колонка -->
-                </tr>
-            </thead>
-            <tbody>
-                {% for load in loads %}
-                <tr>
-                    <td>{{ load.id }}</td>
-                    <td>{{ load.ref_number }}</td>
-                    <td>{{ load.booked_on|date:"M d, Y" }}</td>
-                    <td>{{ load.broker.name|default:"-" }}</td>
-                    <td>
-                        {% if load.driver %}
-                            {{ load.driver.name }}
-                            <br>
-                            <small style="color: gray;">
-                                {% if load.driver.pay_type == 'percent_of_gross' %}
-                                    {{ load.driver.driver_percent }}%
-                                {% else %}
-                                    ${{ load.driver.driver_per_mile }}/mi
-                                {% endif %}
-                            </small>
-                        {% else %}
-                            <span style="color: red;">Not assigned</span>
-                        {% endif %}
-                    </td>
-
-                    <!-- КОЛОНКА FILES: Ссылки + Кнопка Upload -->
-                    <td>
-                        {% if load.rc %}
-                            <a href="{{ load.rc.url }}" target="_blank">RC</a>
-                        {% endif %}
-                        {% if load.bol %}
-                             {% if load.rc %} | {% endif %} <a href="{{ load.bol.url }}" target="_blank">BOL</a>
-                        {% endif %}
-                        {% if load.pod %}
-                             {% if load.rc or load.bol %} | {% endif %} <a href="{{ load.pod.url }}" target="_blank">POD</a>
-                        {% endif %}
-
-                        <!-- Если есть файлы, делаем перенос строки перед кнопкой -->
-                        {% if load.rc or load.bol or load.pod %}<br>{% endif %}
-
-                        <a href="{% url 'load_upload' load.id %}"
-                           style="font-size: 0.8em; color: blue; text-decoration: none;">
-                           [+ Upload]
-                        </a>
-                    </td>
-
-                    <td>{{ load.miles }} mi</td>
-                
-                    <td class="money"><strong>${{ load.rate }}</strong></td>
-
-                    <!-- Driver Pay -->
-                    <td class="money">
-                        ${{ load.driver_payout_final|default:load.driver_payout }}
-                    </td>
-
-                    <!-- Disp Pay -->
-                    <td class="money">
-                        ${{ load.dispatcher_payout_final|default:load.dispatcher_payout }}
-                        <br>
-                        <small style="color: gray;">
-                            {{ load.disp.name|default:"-" }} ({{ load.disp_percent }}%)
-                        </small>
-                    </td>
-
-                    <!-- Profit -->
-                    <td class="money">
-                        {% with profit=load.company_profit_final|default:load.company_profit %}
-                            <span class="{% if profit >= 0 %}profit-positive{% else %}profit-negative{% endif %}">
-                                ${{ profit }}
-                            </span>
-                        {% endwith %}
-                    </td>
-
-                    <!-- Actions -->
-                    <td style="white-space: nowrap;">
-                        <a href="{% url 'load_edit' load.id %}" style="color: #4CAF50; text-decoration: none; font-weight: bold; margin-right: 10px;">
-                            Edit
-                        </a>
-                        <a href="{% url 'load_delete' load.id %}" style="color: #dc3545; text-decoration: none; font-weight: bold;">
-                            X
-                        </a>
-                    </td>
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="12" style="text-align: center; padding: 20px;">
-                        No loads found yet. <a href="{% url 'load_add' %}">Add first load</a>
-                    </td>
-                </tr>
+        <div>
+            <label style="font-size: 0.8em; display: block;">Driver</label>
+            <select name="driver" style="padding: 5px; min-width: 120px;">
+                <option value="">All Drivers</option>
+                {% for d in drivers %}
+                    <option value="{{ d.id }}" {% if d.id == current_driver %}selected{% endif %}>
+                        {{ d.name }}
+                    </option>
                 {% endfor %}
-            </tbody>
-        </table>
+            </select>
+        </div>
 
-    </body>
-</html>
+        <div>
+            <label style="font-size: 0.8em; display: block;">Broker</label>
+            <select name="broker" style="padding: 5px; min-width: 120px;">
+                <option value="">All Brokers</option>
+                {% for b in brokers %}
+                    <option value="{{ b.id }}" {% if b.id == current_broker %}selected{% endif %}>
+                        {{ b.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <label style="font-size: 0.8em; display: block;">Disp</label>
+            <select name="disp" style="padding: 5px; min-width: 100px;">
+                <option value="">All Disps</option>
+                {% for ds in disps %}
+                    <option value="{{ ds.id }}" {% if ds.id == current_disp %}selected{% endif %}>
+                        {{ ds.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div>
+            <button type="submit" style="padding: 6px 15px; background-color: #333; color: white; border: none; cursor: pointer;">Search</button>
+            <a href="{% url 'load_list' %}" style="margin-left: 10px; font-size: 0.9em; color: #666;">Reset</a>
+        </div>
+    </form>
+</div>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Ref #</th>
+            <th>Date</th>
+            <th>Broker</th>
+            <th>Driver</th>
+            <th>Files</th>
+            <th>From/To (Miles)</th>
+            <th class="money">Rate (Gross)</th>
+            <th class="money">Driver Pay</th>
+            <th class="money">Disp Pay</th>
+            <th class="money">Profit</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for load in loads %}
+        <tr>
+            <td>{{ load.id }}</td>
+            <td>{{ load.ref_number }}</td>
+            <td>{{ load.booked_on|date:"M d, Y" }}</td>
+            <td>{{ load.broker.name|default:"-" }}</td>
+            <td>
+                {% if load.driver %}
+                    {{ load.driver.name }}
+                    <br>
+                    <small style="color: gray;">
+                        {% if load.driver.pay_type == 'percent_of_gross' %}
+                            {{ load.driver.driver_percent }}%
+                        {% else %}
+                            ${{ load.driver.driver_per_mile }}/mi
+                        {% endif %}
+                    </small>
+                {% else %}
+                    <span style="color: red;">Not assigned</span>
+                {% endif %}
+            </td>
+
+            <td>
+                {% if load.rc %}
+                    <a href="{{ load.rc.url }}" target="_blank">RC</a>
+                {% endif %}
+                {% if load.bol %}
+                     {% if load.rc %} | {% endif %}<a href="{{ load.bol.url }}" target="_blank">BOL</a>
+                {% endif %}
+                {% if load.pod %}
+                     {% if load.rc or load.bol %} | {% endif %}<a href="{{ load.pod.url }}" target="_blank">POD</a>
+                {% endif %}
+
+                {% if load.rc or load.bol or load.pod %}<br>{% endif %}
+
+                <a href="{% url 'load_upload' load.id %}"
+                   style="font-size: 0.8em; color: blue; text-decoration: none;">
+                   [+ Upload]
+                </a>
+            </td>
+
+            <td>{{ load.miles }} mi</td>
+
+            <td class="money"><strong>${{ load.rate }}</strong></td>
+
+            <td class="money">
+                ${{ load.drivers_payout_final|default:load.driver_payout }}
+            </td>
+
+            <td class="money">
+                ${{ load.dispatcher_payout_final|default:load.dispatcher_payout }}
+                <br>
+                <small style="color: gray;">
+                    {{ load.disp.name|default:"-" }} ({{ load.disp_percent }}%)
+                </small>
+            </td>
+
+            <td class="money">
+                {% with profit=load.company_profit_final|default:load.company_profit %}
+                    <span class="{% if profit >= 0 %}profit-positive{% else %}profit-negative{% endif %}">
+                        ${{ profit }}
+                    </span>
+                {% endwith %}
+            </td>
+
+            <td style="white-space: nowrap;">
+                <a href="{% url 'load_edit' load.id %}" style="color: #4CAF50; text-decoration: none; font-weight: bold; margin-right: 10px;">
+                    Edit
+                </a>
+                <a href="{% url 'load_delete' load.id %}" style="color: #dc3545; text-decoration: none; font-weight: bold;">
+                    X
+                </a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="12" style="text-align: center; padding: 20px;">
+                No loads found yet. <a href="{% url 'load_add' %}">Add first load</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

@@ -1,18 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Upload Files</title>
-    <style>
-        body { font-family: sans-serif; padding: 20px; max-width: 600px; margin: 0 auto; }
-        form { border: 1px solid #ddd; padding: 20px; border-radius: 5px; }
-        button { background-color: #4CAF50; color: white; padding: 10px 15px; border: none; cursor: pointer; }
-        button:hover { background-color: #45a049; }
-        .back-link { display: inline-block; margin-top: 10px; color: #666; text-decoration: none; }
-    </style>
-</head>
-<body>
+{% extends "base.html" %}
 
+{% block title %}Load Form{% endblock %}
+
+{% block content %}
+<div class="form-container">
     <h1>
         {% if header_title %}
             {{ header_title }}
@@ -23,16 +14,12 @@
         {% endif %}
     </h1>
 
-
-    <form method="post" enctype="multipart/form-data">
+    <form method="post" enctype="multipart/form-data" class="form-box">
         {% csrf_token %}
-
         {{ form.as_p }}
-
-        <button type="submit">Save Files</button>
+        <button type="submit" class="btn btn-primary">Save</button>
     </form>
 
     <a href="{% url 'load_list' %}" class="back-link">← Back to list</a>
-
-</body>
-</html>
+</div>
+{% endblock %}
