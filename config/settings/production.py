@@ -8,13 +8,16 @@ from .base import *
 DEBUG = False
 
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+ALLOWED_HOSTS = []
 
 
-# Database
+
+
+STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
-
+# Database
 DATABASES = {
  'default': {
    'ENGINE': 'django.db.backends.postgresql',
